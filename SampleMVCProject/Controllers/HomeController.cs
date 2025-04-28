@@ -62,6 +62,15 @@ namespace SampleMVCProject.Controllers
                 }
                 _employeeDbContext.CreateContactUs(viewModel.ContactUs);
                 StringBuilder mailBody = new StringBuilder();
+                mailBody.AppendLine("<h3>Contact Us Form Submission</h3>");
+                mailBody.AppendLine("<p><strong>Full Name:</strong> " + viewModel.ContactUs.FullName + "</p>");
+                mailBody.AppendLine("<p><strong>Phone Number:</strong> " + viewModel.ContactUs.PhoneNumber + "</p>");
+                mailBody.AppendLine("<p><strong>Email:</strong> " + viewModel.ContactUs.Email + "</p>");
+                mailBody.AppendLine("<p><strong>Message:</strong></p>");
+                mailBody.AppendLine("<p><i>" + viewModel.ContactUs.Message + "</i></p>");
+                mailBody.AppendLine("<p>Thank you for contacting us. We will get back to you shortly.</p>");
+                mailBody.AppendLine("<p>Best regards,</p>");
+                mailBody.AppendLine("<p>Naveen Kumar</p>");
                 using (MailMessage mail = new MailMessage())
                 {
                     string Displayname = _configuration["AppSettings:DisplayName"];
@@ -92,7 +101,29 @@ namespace SampleMVCProject.Controllers
             }
             return RedirectToAction("EmployeeLogin");
         }
+        public IActionResult RegisterNewUser()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult RegisterNewUser(Employee employee)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(employee);
+            }
+            var result = _employeeDbContext.CreateEmployee(employee);
+            if (result == null)
+            {
+                TempData["ErrorMessage"] = "Error Ocurred  when Creating Account";
+            }
+            else
+            {
+                TempData["SuccessMessage"] = "User Registered successfully";
+            }
+            return View();
 
+        }
 
         public IActionResult Index()
         {
@@ -153,10 +184,10 @@ namespace SampleMVCProject.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> CreateEmployee(Users employee)
+        public IActionResult CreateEmployee(Employee employee)
         {
-            var result = await _identityUser.CreateUserAsync(employee);
-            if (result > 0)
+            var result = _employeeDbContext.CreateEmployee(employee);
+            if (result == null)
             {
                 TempData["ErrorMessage"] = "Error Ocurred  when employee adding";
             }
@@ -320,35 +351,43 @@ namespace SampleMVCProject.Controllers
             TempData["SuccessMessage"] = "Experience Added Successfully";
             return View();
         }
-        public IActionResult RegisterNewUser()
-        {
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> RegisterNewUser(Users user)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(user);
-            }
-            var result = await _identityUser.CreateUserAsync(user);
-            if (result > 0)
-            {
-                TempData["ErrorMessage"] = "Error Ocurred  when employee adding";
-            }
-            else
-            {
-                TempData["SuccessMessage"] = "Employee Created successfully";
-            }
-            return View();
-
-        }
+     
         public IActionResult ForgotPassword()
         {
             return View();
         }
-        public async Task<IActionResult> ForgotPassword(string username)
+        [HttpPost]
+        public IActionResult ForgotPassword(ForgotPassword User)
         {
+
+            string password = _employeeDbContext.GetPassword_By_Username(User.Username);
+            StringBuilder mailBody = new StringBuilder();
+            mailBody.AppendLine("<p>Your Password is " + password + "</p>");
+            using (MailMessage mail = new MailMessage())
+            {
+                string Displayname = _configuration["AppSettings:DisplayName"];
+                string mailFrom = _configuration["AppSettings:smtpUser"];
+                mail.To.Add(User.Username.Trim());
+                mail.From = new MailAddress(mailFrom, Displayname);
+                mail.Subject = "Contacting me";
+                mail.Body = mailBody.ToString();
+                mail.IsBodyHtml = true;
+
+                using (SmtpClient smtp = new SmtpClient())
+                {
+                    smtp.Host = _configuration["AppSettings:smtpServer"];
+                    smtp.Port = Convert.ToInt32(_configuration["AppSettings:smtpPort"]);
+                    smtp.EnableSsl = Convert.ToBoolean(_configuration["AppSettings:EnableSsl"]);
+                    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    smtp.UseDefaultCredentials = false;
+                    smtp.Credentials = new NetworkCredential(
+                        _configuration["AppSettings:smtpUser"],
+                        _configuration["AppSettings:PWD"]);
+                    smtp.Timeout = 20000;
+                    smtp.Send(mail);
+                }
+            }
+
             return View();
         }
     }

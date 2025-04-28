@@ -41,17 +41,18 @@ namespace SampleMVCProject.DbContexts
         public string CreateEmployee(Employee employee)
         {
             DynamicParameters param = new DynamicParameters();
-            param.Add("Id", employee.Id);
-            int count = _db.ExecuteScalar<int>("Check_Employee_Exist", param, commandType: CommandType.StoredProcedure, commandTimeout: 600);
-            if (count > 0)
-            {
-                return "Employee Id already exist";
-            }
+            //param.Add("Id", employee.Id);
+            //int count = _db.ExecuteScalar<int>("Check_Employee_Exist", param, commandType: CommandType.StoredProcedure, commandTimeout: 600);
+            //if (count > 0)
+            //{
+            //    return "Employee Id already exist";
+            //}
             param.Add("Name", employee.Name);
             param.Add("PhoneNumber", employee.PhoneNumber);
             param.Add("Email", employee.Email);
             param.Add("Gender", employee.Gender);
             param.Add("Department", employee.Department);
+            param.Add("Password", employee.Password);
             _db.Query("Create_New_Employee", param, commandType: CommandType.StoredProcedure, commandTimeout: 600);
             return "Employee Created Successfully";
         }
@@ -126,6 +127,11 @@ namespace SampleMVCProject.DbContexts
             parameters.Add("EmployeeId",employeeId);
             return _db.Query<Experience>("Get_ExperienceDetails", parameters, commandType: CommandType.StoredProcedure, commandTimeout: 600);
         }
-         
+         public string GetPassword_By_Username(string Username)
+        {
+            DynamicParameters param = new DynamicParameters();
+            param.Add("Username", Username);
+            return _db.Query<string>("GetPassword_By_Username",param,commandType:CommandType.StoredProcedure,commandTimeout:600).FirstOrDefault();
+        }
     }
 }
