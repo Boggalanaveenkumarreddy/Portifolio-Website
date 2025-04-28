@@ -4,40 +4,47 @@
     ViewData["Title"] = "Login";
 }
 
-<div class="d-flex justify-content-center align-items-center">
-    <div class="card shadow p-4" style="width: 100%; max-width: 400px; border-radius: 1rem;">
-        <div class="card-body">
-            <h3 class="card-title text-center mb-4">Login</h3>
-            <form asp-action="EmployeeLogin">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
- 
-                <div class="form-group mb-3">
-                    <label asp-for="Username" class="form-label">Username</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                        <input asp-for="Username" class="form-control" placeholder="Enter your username" />
+<div class="container-fluid p-0 m-0">
+    <div class="row g-0" style="min-height: 100vh;">
+
+        <div class="col-md-6 d-flex justify-content-center align-items-center">
+            <img src="~/ImageUpload/PageImages/login_img2.svg" alt="Register" class="img-fluid" style="max-height: 100%; width: auto;" />
+        </div>
+
+        <div class="col-md-6 d-flex justify-content-center pt-lg-5">
+            <div class="p-4" style="width: 100%; max-width: 500px;">
+                <h3 class="text-center mb-4">Login</h3>
+                <form asp-action="EmployeeLogin">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Username" class="form-label">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                            <input asp-for="Username" class="form-control" placeholder="Enter your username" />
+                        </div>
+                        <span asp-validation-for="Username" class="text-danger small"></span>
                     </div>
-                    <span asp-validation-for="Username" class="text-danger small"></span>
-                </div>
 
-                <div class="form-group mb-4">
-                    <label asp-for="Password" class="form-label">Password</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                        <input asp-for="Password" class="form-control" type="password" placeholder="Enter your password" />
+                    <div class="form-group mb-4">
+                        <label asp-for="Password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                            <input asp-for="Password" class="form-control" type="password" placeholder="Enter your password" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
                     </div>
-                    <span asp-validation-for="Password" class="text-danger small"></span>
-                </div>
 
-                <div class="d-flex justify-content-between mb-3">
-                    <span><a  asp-action="RegisterNewUser" class="text-decoration-none">don't have an account,register now</a></span>
-                    <span><a  asp-action="ForgotPassword" class="text-decoration-none">Forgot password?</a></span>
-                </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span><a asp-action="RegisterNewUser" class="text-decoration-none">Don't have an account? Register now</a></span>
+                        <span><a asp-action="ForgotPassword" class="text-decoration-none">Forgot password?</a></span>
+                    </div>
 
-                <div class="d-grid">
-                    <input type="submit" value="Login" class="btn btn-primary" />
-                </div>
-            </form>
+                    <div class="d-grid">
+                        <input type="submit" value="Login" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

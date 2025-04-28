@@ -4,11 +4,17 @@
     ViewData["Title"] = "Create User";
 }
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow p-4 rounded">
-                <h3 class="card-title text-center mb-4">Register New User</h3>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left Side: Image -->
+        <div class="col-md-6 d-flex justify-content-center" style="height: 100vh;">
+            <img src="~/ImageUpload/PageImages/account.svg" alt="Forgot Password" class="img-fluid" style="max-height: 100%; width: auto;" />
+        </div>
+
+        <!-- Right Side: Form -->
+        <div class="col-md-6 d-flex justify-content-center p-lg-5">
+            <div style="width: 100%; max-width: 500px;">
+                <h3 class="text-center mb-4">Register New User</h3>
                 <form asp-action="RegisterNewUser">
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 

@@ -387,7 +387,7 @@ namespace SampleMVCProject.Controllers
                     smtp.Send(mail);
                 }
             }
-
+            TempData["SuccessMessage"] = "Password is sent to your Email";
             return View();
         }
     }
