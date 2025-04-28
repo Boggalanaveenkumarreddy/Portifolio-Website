@@ -1,0 +1,41 @@
+﻿@model SampleMVCProject.Models.SkillDetails
+
+@{
+    ViewData["Title"] = "AddSkill";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow-lg p-4">
+            <h3 class="text-center mb-4">Add Skill</h3>
+            <form asp-action="AddSkill" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="SkillName" class="form-label">Skill Name</label>
+                    <input asp-for="SkillName" class="form-control" placeholder="Enter Skill Name" />
+                    <span asp-validation-for="SkillName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="SkillDescription" class="form-label">Skill Description</label>
+                    <input asp-for="SkillDescription" class="form-control" placeholder="Enter a short description of the skill" />
+                    <span asp-validation-for="SkillDescription" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="UploadImage" class="form-label">Skill Image (Optional)</label>
+                    <input asp-for="UploadImage" type="file" accept=".jpg,.jpeg,.png" class="form-control" />
+                    <span asp-validation-for="UploadImage" class="text-danger small mt-2 d-block"></span>
+                </div>
+
+                <div class="form-group text-center">
+                    <input type="submit" value="Add Skill" class="btn btn-success w-100" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+

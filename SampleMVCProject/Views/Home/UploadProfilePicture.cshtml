@@ -1,0 +1,26 @@
+﻿@model SampleMVCProject.Models.ProfileUpload
+@{
+    ViewData["Title"] = "UploadProfilePicture";
+}
+
+<div class="d-flex justify-content-center align-items-center ">
+    <div class="card shadow-sm p-4" style="width: 100%; max-width: 400px; border-radius: 1rem;">
+        <div class="card-body text-center">
+            <h4 class="card-title mb-4">Upload Profile Picture</h4>
+            <form asp-action="UploadProfilePicture" enctype="multipart/form-data">
+                <div class="mb-4">
+                    <label asp-for="UploadProfile" class="form-label d-block">Choose Image</label>
+                    <div class="border border-2 border-dashed rounded p-4 bg-white position-relative" style="cursor: pointer;">
+                        <i class="bi bi-upload fs-1 text-primary"></i>
+                        <p class="mt-2 mb-0 text-muted">Drag & drop or click to upload</p>
+                        <input asp-for="UploadProfile" type="file" accept=".jpg,.jpeg,.png" class="form-control position-absolute top-0 start-0 w-100 h-100 opacity-0" />
+                    </div>
+                    <span asp-validation-for="UploadProfile" class="text-danger small d-block mt-2"></span>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Upload</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+

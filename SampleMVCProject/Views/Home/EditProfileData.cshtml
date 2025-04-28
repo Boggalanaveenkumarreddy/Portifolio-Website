@@ -1,0 +1,65 @@
+﻿@model SampleMVCProject.Models.Employee
+
+@{
+    ViewData["Title"] = "EditProfileData";
+}
+
+<div class="d-flex justify-content-center align-items-center ">
+    <div class="card shadow-lg p-4 w-100" style="max-width: 600px; border-radius: 1rem;">
+        <div class="card-body">
+            <h4 class="card-title text-center mb-4">Edit Profile</h4>
+            <form asp-action="EditProfileData">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label">Full Name</label>
+                    <input asp-for="Name" class="form-control" placeholder="Enter your full name" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                    <input asp-for="PhoneNumber" class="form-control" placeholder="Enter phone number" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email Address</label>
+                    <input asp-for="Email" class="form-control" placeholder="Enter email address" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Gender</label><br />
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="Gender" value="Male" id="genderMale" />
+                        <label class="form-check-label" for="genderMale">Male</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="Gender" value="Female" id="genderFemale" />
+                        <label class="form-check-label" for="genderFemale">Female</label>
+                    </div>
+                    <span asp-validation-for="Gender" class="text-danger small d-block mt-1"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Department" class="form-label">Department</label>
+                    <select asp-for="Department" class="form-select">
+                        <option value="">-- Select Department --</option>
+                        <option value="IT">IT</option>
+                        <option value=".Dotnet">DOTNET</option>
+                        <option value="Java">Java</option>
+                    </select>
+                    <span asp-validation-for="Department" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary w-50 me-2">Save</button>
+                    <a asp-action="Home" class="btn btn-outline-danger w-50">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+

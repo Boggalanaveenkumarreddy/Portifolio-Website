@@ -1,0 +1,147 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model IEnumerable<SampleMVCProject.Models.Employee>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Employees List</h2>
+    <a asp-action="CreateEmployee" class="btn btn-primary d-inline-flex align-items-center">
+        <span class="fs-5 me-2">+</span> Employee
+    </a>
+</div>
+
+<table class="table" id="example">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Phone Number</th>
+            <th>Email</th>
+            <th>Gender</th>
+            <th>Department</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var employee in Model)
+        {
+            <tr>
+                <td>@employee.Id</td>
+                <td>@employee.Name</td>
+                <td>@employee.PhoneNumber</td>
+                <td>@employee.Email</td>
+                <td>@(employee.Gender??"--")</td>
+                <td>@(employee.Department??"-")</td>
+                <td>
+                    <a asp-action="EditEmployee" asp-route-id="@employee.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <button type="button"
+                            class="btn btn-sm btn-danger ms-2"
+                            data-bs-toggle="modal"
+                            data-bs-target="#deleteModal-@employee.Id">
+                        Delete
+                    </button>
+
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade" id="deleteModal-@employee.Id" tabindex="-1" aria-labelledby="deleteModalLabel-@employee.Id" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="deleteModalLabel-@employee.Id">Confirm Delete</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to delete <strong>@employee.Name</strong>?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <form method="post" asp-action="DeleteEmployee" asp-route-id="@employee.Id">
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+ 
+@* @section Scripts { *@
+@*     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script> *@
+@*     <script> *@
+@*         $(document).ready(function () { *@
+@*             // Clone header row and add inputs *@
+@*             $('#example thead tr').clone(true).appendTo('#example thead'); *@
+@*             $('#example thead tr:eq(1) th').each(function (i) { *@
+@*                 var title = $(this).text(); *@
+@*                 if (title !== "Actions") { *@
+@*                     $(this).html('<input type="text" placeholder="Search ' + title + '" />'); *@
+@*                     $('input', this).on('keyup change', function () { *@
+@*                         if (table.column(i).search() !== this.value) { *@
+@*                             table *@
+@*                                 .column(i) *@
+@*                                 .search(this.value) *@
+@*                                 .draw(); *@
+@*                         } *@
+@*                     }); *@
+@*                 } else { *@
+@*                     $(this).html(''); *@
+@*                 } *@
+@*             }); *@
+
+@*             var table = $('#example').DataTable({ *@
+@*                 orderCellsTop: true, *@
+@*                 fixedHeader: true *@
+@*             }); *@
+@*         }); *@
+@*     </script> *@
+@* } *@
+
+@* @model IEnumerable<SampleMVCProject.Models.Student> *@
+
+@* <div class="container mt-4"> *@
+@*     <h2 class="mb-4">Student List</h2> *@
+
+@*     <div class="mb-3 text-end"> *@
+@*         <a asp-action="CreateStudent" class="btn btn-primary">Create Student</a> *@
+@*     </div> *@
+
+@*     <table class="table table-bordered table-striped" id="studentTable"> *@
+@*         <thead class="table-dark"> *@
+@*             <tr> *@
+@*                 <th>Id</th> *@
+@*                 <th>Name</th> *@
+@*                 <th>Phone Number</th> *@
+@*                 <th>Email</th> *@
+@*                 <th>Actions</th> *@
+@*             </tr> *@
+@*             <tr> *@
+@*                 <th><input type="text" class="form-control form-control-sm" placeholder="Search Id" /></th> *@
+@*                 <th><input type="text" class="form-control form-control-sm" placeholder="Search Name" /></th> *@
+@*                 <th><input type="text" class="form-control form-control-sm" placeholder="Search Phone" /></th> *@
+@*                 <th><input type="text" class="form-control form-control-sm" placeholder="Search Email" /></th> *@
+@*                 <th></th> *@
+@*             </tr> *@
+@*         </thead> *@
+@*         <tbody> *@
+@*             @foreach (var student in Model) *@
+@*             { *@
+@*                 <tr> *@
+@*                     <td>@student.Id</td> *@
+@*                     <td>@student.Name</td> *@
+@*                     <td>@student.PhoneNumber</td> *@
+@*                     <td>@student.Email</td> *@
+@*                     <td> *@
+@*                         <a asp-action="EditStudent" asp-route-id="@student.Id" class="btn btn-sm btn-warning me-1">Edit</a> *@
+@*                         <a asp-action="DeleteStudent" asp-route-id="@student.Id" class="btn btn-sm btn-danger" *@
+@*                            onclick="return confirm('Are you sure to delete this Student?')">Delete</a> *@
+@*                     </td> *@
+@*                 </tr> *@
+@*             } *@
+@*         </tbody> *@
+@*     </table> *@
+@* </div> *@
+
+

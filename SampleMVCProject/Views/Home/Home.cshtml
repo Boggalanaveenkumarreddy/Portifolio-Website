@@ -1,0 +1,132 @@
+﻿@using Newtonsoft.Json
+@model SampleMVCProject.Models.EmployeeSkill
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+<!-- HERO SECTION -->
+<section class="py-5 text-center" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: white;">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Hi, I'm Naveen</h1>
+        <p class="lead mb-4">A passionate Software Developer crafting elegant solutions and innovative applications.</p>
+        <a href="#skills" class="btn btn-light btn-lg">Explore My Work</a>
+    </div>
+</section>
+
+<!-- SKILLS SECTION -->
+<section id="skills" class="py-5" style="background-color: #f8f9fa;">
+    <div class="container">
+        <h2 class="text-center mb-5 text-primary">My Skills</h2>
+
+        @if (Model.Skills != null && Model.Skills.Any())
+        {
+            <div class="row">
+                @foreach (var skill in Model.Skills)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm h-100 border-0">
+                            <img src="~/@skill.SkillImage" class="card-img-top" alt="Skill Image" style="height: 220px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">@skill.SkillName</h5>
+                                <p class="card-text text-muted">@skill.SkillDescription</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info text-center py-5">
+                <i class="bi bi-tools fs-1 text-primary mb-3"></i>
+                <h5>No skills added yet!</h5>
+                <p class="mb-3">Start by showcasing your talents.</p>
+                <a asp-action="AddSkill" class="btn btn-outline-primary">Add Your First Skill</a>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- EXPERIENCE SECTION -->
+<section id="experience" class="py-5" style="background-color: #e3f2fd;">
+    <div class="container">
+        <h2 class="text-center mb-5 text-primary">Professional Experience</h2>
+
+        @if (Model.Experience != null && Model.Experience.Any())
+        {
+            <div class="row">
+                @foreach (var exp in Model.Experience)
+                {
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm h-100 border-0">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="bi bi-briefcase-fill text-primary me-2"></i> @exp.CompanyName
+                                </h5>
+                                <h6 class="card-subtitle mb-2 text-muted">@exp.Duration</h6>
+                                <p class="card-text">@exp.ExperienceDescription</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning text-center py-5">
+                <i class="bi bi-briefcase fs-1 text-warning mb-3"></i>
+                <h5>No experience records found!</h5>
+                <p class="mb-3">Add your work experience and impress your visitors.</p>
+                <a asp-action="AddExperience" class="btn btn-outline-warning">Add Experience</a>
+            </div>
+        }
+    </div>
+</section>
+<section id="contactUs" class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <h2 class="text-center text-primary mb-4">Contact Us</h2>
+                <form asp-action="Home">
+                    <!-- Validation Summary -->
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <!-- Full Name -->
+                    <div class="mb-4">
+                        <label asp-for="ContactUs.FullName" class="form-label fs-5">Full Name</label>
+                        <input asp-for="ContactUs.FullName" class="form-control form-control-lg" placeholder="Enter your full name" />
+                        <span asp-validation-for="ContactUs.FullName" class="text-danger"></span>
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="mb-4">
+                        <label asp-for="ContactUs.PhoneNumber" class="form-label fs-5">Phone Number</label>
+                        <input asp-for="ContactUs.PhoneNumber" class="form-control form-control-lg" placeholder="Enter your phone number" />
+                        <span asp-validation-for="ContactUs.PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-4">
+                        <label asp-for="ContactUs.Email" class="form-label fs-5">Email</label>
+                        <input asp-for="ContactUs.Email" class="form-control form-control-lg" placeholder="Enter your email" />
+                        <span asp-validation-for="ContactUs.Email" class="text-danger"></span>
+                    </div>
+
+                    <!-- Message -->
+                    <div class="mb-4">
+                        <label asp-for="ContactUs.Message" class="form-label fs-5">Your Message</label>
+                        <textarea asp-for="ContactUs.Message" class="form-control form-control-lg" rows="5" placeholder="Your message..." style="resize: none;"></textarea>
+                        <span asp-validation-for="ContactUs.Message" class="text-danger"></span>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
