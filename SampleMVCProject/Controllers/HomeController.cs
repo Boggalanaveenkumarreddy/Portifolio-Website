@@ -27,6 +27,11 @@ namespace SampleMVCProject.Controllers
         }
         public IActionResult Home()
         {
+            //EmployeeLoginDeatails employeeLoginDeatails = new EmployeeLoginDeatails();
+            //employeeLoginDeatails.Username = "boggalanaveen321@gmail.com";
+            //employeeLoginDeatails.Password = "naveen@321";
+            //var result = _employeeDbContext.EmployeeLoginCheck(employeeLoginDeatails);
+            //HttpContext.Session.SetString("LogginedUser", JsonConvert.SerializeObject(result));
             var json = HttpContext.Session.GetString("LogginedUser");
             if (json != null)
             {
@@ -153,14 +158,34 @@ namespace SampleMVCProject.Controllers
             return View(result);
         }
         [HttpPost]
-        public IActionResult EditProfileData(Employee employee)
+        public async Task<IActionResult> EditProfileData(Employee employee)
         {
             var json = HttpContext.Session.GetString("LogginedUser");
-            Employee result = null;
             if (json != null)
             {
                 var employee1 = JsonConvert.DeserializeObject<Employee>(json);
                 employee.Id = employee1.Id;
+            }
+            if (employee.UploadResume != null && employee.UploadResume.Length > 0)
+            {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(employee.UploadResume.FileName);
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ImageUpload", "ResumeUploads");
+
+                if (!Directory.Exists(uploadPath))
+                {
+                    Directory.CreateDirectory(uploadPath);
+                }
+                var filePath = Path.Combine(uploadPath, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await employee.UploadResume.CopyToAsync(stream);
+                }
+                employee.Resume = Path.Combine("ImageUpload", "ResumeUploads", fileName).Replace("\\", "/");
+            }
+            else
+            {
+                employee.Resume = _employeeDbContext.Get_Resume_By_Id(employee.Id);
             }
             _employeeDbContext.UpdateProfileData(employee);
             TempData["SuccessMessage"] = "Profile Data Updated Successfully";
@@ -351,7 +376,7 @@ namespace SampleMVCProject.Controllers
             TempData["SuccessMessage"] = "Experience Added Successfully";
             return View();
         }
-     
+
         public IActionResult ForgotPassword()
         {
             return View();
@@ -390,5 +415,6 @@ namespace SampleMVCProject.Controllers
             TempData["SuccessMessage"] = "Password is sent to your Email";
             return View();
         }
+
     }
 }

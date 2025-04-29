@@ -86,6 +86,7 @@ namespace SampleMVCProject.DbContexts
             param.Add("Department",employee.Department);
             param.Add("Gender",employee.Gender);
             param.Add("Email",employee.Email);
+            param.Add("Resume", employee.Resume);
             _db.Query("Update_Profile_Data", param, commandType: CommandType.StoredProcedure, commandTimeout: 600);
         }
         public void CreateContactUs(ContactUs contactUs)
@@ -132,6 +133,12 @@ namespace SampleMVCProject.DbContexts
             DynamicParameters param = new DynamicParameters();
             param.Add("Username", Username);
             return _db.Query<string>("GetPassword_By_Username",param,commandType:CommandType.StoredProcedure,commandTimeout:600).FirstOrDefault();
+        }
+        public string Get_Resume_By_Id(long id)
+        {
+            DynamicParameters param = new DynamicParameters();
+            param.Add("Id", id);
+            return _db.Query<string>("Get_Resume_By_Id", param, commandType: CommandType.StoredProcedure, commandTimeout: 600).FirstOrDefault();
         }
     }
 }

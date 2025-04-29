@@ -8,9 +8,17 @@
 <!-- HERO SECTION -->
 <section class="py-5 text-center" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: white;">
     <div class="container">
-        <h1 class="display-4 fw-bold mb-3">Hi, I'm Naveen</h1>
+        <h1 class="display-4 fw-bold mb-3">Hi, I'm @Model.Employee.Name</h1>
         <p class="lead mb-4">A passionate Software Developer crafting elegant solutions and innovative applications.</p>
         <a href="#skills" class="btn btn-light btn-lg">Explore My Work</a>
+        <a href="@Url.Content("~/" + Model.Employee.Resume)"
+           class="btn btn-light btn-lg"
+           download>
+            Download My Resume
+        </a>
+
+
+
     </div>
 </section>
 
@@ -89,38 +97,32 @@
             <div class="col-md-8 col-lg-6">
                 <h2 class="text-center text-primary mb-4">Contact Us</h2>
                 <form asp-action="Home">
-                    <!-- Validation Summary -->
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                    <!-- Full Name -->
                     <div class="mb-4">
                         <label asp-for="ContactUs.FullName" class="form-label fs-5">Full Name</label>
                         <input asp-for="ContactUs.FullName" class="form-control form-control-lg" placeholder="Enter your full name" />
                         <span asp-validation-for="ContactUs.FullName" class="text-danger"></span>
                     </div>
 
-                    <!-- Phone Number -->
                     <div class="mb-4">
                         <label asp-for="ContactUs.PhoneNumber" class="form-label fs-5">Phone Number</label>
                         <input asp-for="ContactUs.PhoneNumber" class="form-control form-control-lg" placeholder="Enter your phone number" />
                         <span asp-validation-for="ContactUs.PhoneNumber" class="text-danger"></span>
                     </div>
 
-                    <!-- Email -->
                     <div class="mb-4">
                         <label asp-for="ContactUs.Email" class="form-label fs-5">Email</label>
                         <input asp-for="ContactUs.Email" class="form-control form-control-lg" placeholder="Enter your email" />
                         <span asp-validation-for="ContactUs.Email" class="text-danger"></span>
                     </div>
 
-                    <!-- Message -->
                     <div class="mb-4">
                         <label asp-for="ContactUs.Message" class="form-label fs-5">Your Message</label>
                         <textarea asp-for="ContactUs.Message" class="form-control form-control-lg" rows="5" placeholder="Your message..." style="resize: none;"></textarea>
                         <span asp-validation-for="ContactUs.Message" class="text-danger"></span>
                     </div>
 
-                    <!-- Submit Button -->
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary btn-lg w-100">Submit</button>
                     </div>

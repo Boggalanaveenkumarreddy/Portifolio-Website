@@ -12,5 +12,7 @@ namespace SampleMVCProject.Models
         public string Gender {  get; set; }
         public string Department {  get; set; }
         public string ?Profile { get; set; }
+        public string? Resume { get; set; }
+        public IFormFile UploadResume { get; set; }
     }
 }
