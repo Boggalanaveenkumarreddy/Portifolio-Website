@@ -10,38 +10,64 @@
     <div class="container">
         <h1 class="display-4 fw-bold mb-3">Hi, I'm @Model.Employee.Name</h1>
         <p class="lead mb-4">A passionate Software Developer crafting elegant solutions and innovative applications.</p>
-        <a href="#skills" class="btn btn-light btn-lg">Explore My Work</a>
+        <a href="#skills" class="btn btn-outline-light btn-lg">Explore My Work</a>
         <a href="@Url.Content("~/" + Model.Employee.Resume)"
-           class="btn btn-light btn-lg"
+           class="btn btn-outline-light btn-lg"
            download>
-            Download My Resume
+            <i class="bi bi-download"></i>
+            My Resume
         </a>
-
-
-
     </div>
 </section>
 
 <!-- SKILLS SECTION -->
-<section id="skills" class="py-5" style="background-color: #f8f9fa;">
+@using System.Linq
+<section id="skills" class="py-5"  >
     <div class="container">
         <h2 class="text-center mb-5 text-primary">My Skills</h2>
 
         @if (Model.Skills != null && Model.Skills.Any())
         {
-            <div class="row">
-                @foreach (var skill in Model.Skills)
-                {
-                    <div class="col-md-4 mb-4">
-                        <div class="card shadow-sm h-100 border-0">
-                            <img src="~/@skill.SkillImage" class="card-img-top" alt="Skill Image" style="height: 220px; object-fit: cover;">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary">@skill.SkillName</h5>
-                                <p class="card-text text-muted">@skill.SkillDescription</p>
+            var groupedSkills = Model.Skills
+            .Select((skill, index) => new { skill, index })
+            .GroupBy(x => x.index / 3)
+            .Select(g => g.Select(x => x.skill).ToList())
+            .ToList();
+
+            <div id="skillsCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    @for (int i = 0; i < groupedSkills.Count; i++)
+                    {
+                        var skillGroup = groupedSkills[i];
+                        <div class="carousel-item @(i == 0 ? "active" : "")">
+                            <div class="row justify-content-center">
+                                @foreach (var skill in skillGroup)
+                                {
+                                    <div class="col-md-4 mb-4">
+                                        <div class="card shadow-sm h-100 border-2">
+                                            <img src="~/@skill.SkillImage" class="card-img-top" alt="Skill Image" style="height: 220px; object-fit: cover;">
+                                            <div class="card-body">
+                                                <h5 class="card-title text-primary">@skill.SkillName</h5>
+                                                <p class="card-text text-muted">@skill.SkillDescription</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
+
+                <!-- Carousel controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#skillsCarousel" data-bs-slide="prev">
+                    <i class="bi bi-chevron-left fs-2 text-black"></i>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+
+                <button class="carousel-control-next" type="button" data-bs-target="#skillsCarousel" data-bs-slide="next">
+                    <i class="bi bi-chevron-right fs-2 text-black"></i>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
         }
         else
@@ -55,6 +81,7 @@
         }
     </div>
 </section>
+
 
 <!-- EXPERIENCE SECTION -->
 <section id="experience" class="py-5" style="background-color: #e3f2fd;">
@@ -94,41 +121,49 @@
 <section id="contactUs" class="py-5 bg-light">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <h2 class="text-center text-primary mb-4">Contact Us</h2>
-                <form asp-action="Home">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <div class="col-md-6 d-flex justify-content-center p-lg-5">
+                <div style="width: 100%; max-width: 500px;">
+                    <h3 class="text-center mb-4 text-primary">Contact Us</h3>
+                    <form asp-action="Home">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                    <div class="mb-4">
-                        <label asp-for="ContactUs.FullName" class="form-label fs-5">Full Name</label>
-                        <input asp-for="ContactUs.FullName" class="form-control form-control-lg" placeholder="Enter your full name" />
-                        <span asp-validation-for="ContactUs.FullName" class="text-danger"></span>
-                    </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="ContactUs.FullName" class="form-label">Full Name</label>
+                            <input asp-for="ContactUs.FullName" class="form-control" placeholder="Enter your full name" />
+                            <span asp-validation-for="ContactUs.FullName" class="text-danger"></span>
+                        </div>
 
-                    <div class="mb-4">
-                        <label asp-for="ContactUs.PhoneNumber" class="form-label fs-5">Phone Number</label>
-                        <input asp-for="ContactUs.PhoneNumber" class="form-control form-control-lg" placeholder="Enter your phone number" />
-                        <span asp-validation-for="ContactUs.PhoneNumber" class="text-danger"></span>
-                    </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="ContactUs.PhoneNumber" class="form-label">Phone Number</label>
+                            <input asp-for="ContactUs.PhoneNumber" class="form-control" maxlength="10"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                   placeholder="Enter phone number" />
+                            <span asp-validation-for="ContactUs.PhoneNumber" class="text-danger"></span>
+                        </div>
 
-                    <div class="mb-4">
-                        <label asp-for="ContactUs.Email" class="form-label fs-5">Email</label>
-                        <input asp-for="ContactUs.Email" class="form-control form-control-lg" placeholder="Enter your email" />
-                        <span asp-validation-for="ContactUs.Email" class="text-danger"></span>
-                    </div>
+                        <div class="form-group mb-3">
+                            <label asp-for="ContactUs.Email" class="form-label">Email Address</label>
+                            <input asp-for="ContactUs.Email" class="form-control" placeholder="Enter your email" />
+                            <span asp-validation-for="ContactUs.Email" class="text-danger"></span>
+                        </div>
 
-                    <div class="mb-4">
-                        <label asp-for="ContactUs.Message" class="form-label fs-5">Your Message</label>
-                        <textarea asp-for="ContactUs.Message" class="form-control form-control-lg" rows="5" placeholder="Your message..." style="resize: none;"></textarea>
-                        <span asp-validation-for="ContactUs.Message" class="text-danger"></span>
-                    </div>
-
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary btn-lg w-100">Submit</button>
-                    </div>
-                </form>
+                        <div class="form-group mb-3">
+                            <label asp-for="ContactUs.Message" class="form-label">Message</label>
+                            <textarea asp-for="ContactUs.Message" class="form-control" rows="5"
+                                      placeholder="Your message..." style="resize: none;"></textarea>
+                            <span asp-validation-for="ContactUs.Message" class="text-danger"></span>
+                        </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

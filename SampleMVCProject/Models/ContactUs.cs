@@ -6,12 +6,12 @@ namespace SampleMVCProject.Models
     public class ContactUs
     {
         [Display(Name = "Full Name")]
-        [StringLength(100, ErrorMessage = "Full Name cannot be longer than 100 characters")]
+        [StringLength(100, MinimumLength =3, ErrorMessage = "Full Name cannot be  lessthan 3 characters")]
         public required string FullName { get; set; }
 
-        [Display(Name = "Phone Number")]
-        [Range(1000000000, 999999999999, ErrorMessage = "Please enter a valid phone number")]
-        public long PhoneNumber { get; set; }
+        [Required(ErrorMessage = "Please enter Phone Number")]
+        [RegularExpression(@"^[1-9]\d{9}$", ErrorMessage = "Phone number must be 10 digits and cannot start with 0.")]
+        public string PhoneNumber { get; set; }
 
         [Display(Name = "Message")]
         [StringLength(250, ErrorMessage = "Message cannot exceed 250 characters")]

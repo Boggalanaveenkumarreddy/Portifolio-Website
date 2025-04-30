@@ -25,6 +25,16 @@ namespace SampleMVCProject.Controllers
             _configuration = configuration;
             _identityUser = identityUserRepository;
         }
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
         public IActionResult Home()
         {
             //EmployeeLoginDeatails employeeLoginDeatails = new EmployeeLoginDeatails();
@@ -106,6 +116,7 @@ namespace SampleMVCProject.Controllers
             }
             return RedirectToAction("EmployeeLogin");
         }
+        //Register New User
         public IActionResult RegisterNewUser()
         {
             return View();
@@ -126,26 +137,84 @@ namespace SampleMVCProject.Controllers
             {
                 TempData["SuccessMessage"] = "User Registered successfully";
             }
-            return View();
+            return  RedirectToAction("EmployeeLogin");
 
         }
-
-        public IActionResult Index()
-        {
-            var result = _employeeDbContext.GetAllEmployees();
-            return View(result);
-        }
-
-        public IActionResult Privacy()
+        //ForgotPassword
+        public IActionResult ForgotPassword()
         {
             return View();
         }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpPost]
+        public IActionResult ForgotPassword(ForgotPassword User)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if (!ModelState.IsValid)
+            {
+                return View(User);
+            }
+            string password = _employeeDbContext.GetPassword_By_Username(User.Username);
+            if (password == null)
+            {
+                TempData["ErrorMessage"] = "Invalid Email or User Not Found";
+                return View(User);
+            }
+                StringBuilder mailBody = new StringBuilder();
+            mailBody.AppendLine("<p>Your Password is " + password + "</p>");
+            using (MailMessage mail = new MailMessage())
+            {
+                string Displayname = _configuration["AppSettings:DisplayName"];
+                string mailFrom = _configuration["AppSettings:smtpUser"];
+                mail.To.Add(User.Username.Trim());
+                mail.From = new MailAddress(mailFrom, Displayname);
+                mail.Subject = "Contacting me";
+                mail.Body = mailBody.ToString();
+                mail.IsBodyHtml = true;
+
+                using (SmtpClient smtp = new SmtpClient())
+                {
+                    smtp.Host = _configuration["AppSettings:smtpServer"];
+                    smtp.Port = Convert.ToInt32(_configuration["AppSettings:smtpPort"]);
+                    smtp.EnableSsl = Convert.ToBoolean(_configuration["AppSettings:EnableSsl"]);
+                    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                    smtp.UseDefaultCredentials = false;
+                    smtp.Credentials = new NetworkCredential(
+                        _configuration["AppSettings:smtpUser"],
+                        _configuration["AppSettings:PWD"]);
+                    smtp.Timeout = 20000;
+                    smtp.Send(mail);
+                }
+            }
+            TempData["SuccessMessage"] = "Password is sent to your Email";
+            return View();
         }
+
+        //Employee login 
+        public IActionResult EmployeeLogin()
+        {
+            HttpContext.Session.Clear();
+            return View();
+        }
+        [HttpPost]
+        public IActionResult EmployeeLogin(EmployeeLoginDeatails employeeLoginDeatails)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(employeeLoginDeatails);
+            }
+            var result = _employeeDbContext.EmployeeLoginCheck(employeeLoginDeatails);
+            if (result == null)
+            {
+                TempData["ErrorMessage"] = "Invalid Credentials";
+            }
+            if (result != null)
+            {
+                TempData["SuccessMessage"] = "Logined Successfully";
+                HttpContext.Session.SetString("LogginedUser", JsonConvert.SerializeObject(result));
+                return RedirectToAction("Home");
+            }
+            return View();
+        }
+        //Edit Profile Data
         public IActionResult EditProfileData()
         {
             var json = HttpContext.Session.GetString("LogginedUser");
@@ -191,90 +260,7 @@ namespace SampleMVCProject.Controllers
             TempData["SuccessMessage"] = "Profile Data Updated Successfully";
             return RedirectToAction("Index");
         }
-
-        public IActionResult EditEmployee(int id)
-        {
-            var result = _employeeDbContext.GetEmployee(id);
-            return View(result);
-        }
-        [HttpPost]
-        public IActionResult EditEmployee(Employee employee)
-        {
-            _employeeDbContext.UpdateEmployee(employee);
-            TempData["SuccessMessage"] = "Employee Data Updated Successfully";
-            return RedirectToAction("Index");
-        }
-        public IActionResult CreateEmployee()
-        {
-            return View();
-        }
-        [HttpPost]
-        public IActionResult CreateEmployee(Employee employee)
-        {
-            var result = _employeeDbContext.CreateEmployee(employee);
-            if (result == null)
-            {
-                TempData["ErrorMessage"] = "Error Ocurred  when employee adding";
-            }
-            else
-            {
-                TempData["SuccessMessage"] = "Employee Created successfully";
-            }
-            return View();
-        }
-        public IActionResult DeleteEmployee(int id)
-        {
-            _employeeDbContext.DeleteEmployee(id);
-            TempData["SuccessMessage"] = "Employee deleted Successfully";
-            return RedirectToAction("Index");
-        }
-        public IActionResult UpdatePassword()
-        {
-            return View();
-        }
-        [HttpPost]
-        public IActionResult UpdatePassword(EmployeePasswordUpdate employeePasswordUpdate)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(employeePasswordUpdate);
-            }
-            var json = HttpContext.Session.GetString("LogginedUser");
-            if (json != null)
-            {
-                var employee1 = JsonConvert.DeserializeObject<Employee>(json);
-                employeePasswordUpdate.Id = employee1.Id;
-            }
-
-            _employeeDbContext.EmployeePasswordUpdate(employeePasswordUpdate);
-            TempData["SuccessMessage"] = "Password Updated Successfully";
-            return View();
-        }
-        public IActionResult EmployeeLogin()
-        {
-            HttpContext.Session.Clear();
-            return View();
-        }
-        [HttpPost]
-        public IActionResult EmployeeLogin(EmployeeLoginDeatails employeeLoginDeatails)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(employeeLoginDeatails);
-            }
-            var result = _employeeDbContext.EmployeeLoginCheck(employeeLoginDeatails);
-            if (result == null)
-            {
-                TempData["ErrorMessage"] = "Invalid Credentials";
-            }
-            if (result != null)
-            {
-                TempData["SuccessMessage"] = "Logined Successfully";
-                HttpContext.Session.SetString("LogginedUser", JsonConvert.SerializeObject(result));
-                return RedirectToAction("Home");
-            }
-            return View();
-        }
+        //Change Profile picture
         public IActionResult UploadProfilePicture()
         {
             return View();
@@ -316,7 +302,30 @@ namespace SampleMVCProject.Controllers
             TempData["SuccessMessage"] = "Uploaded Successfully";
             return View();
         }
+        //Change Password
+        public IActionResult UpdatePassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult UpdatePassword(EmployeePasswordUpdate employeePasswordUpdate)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(employeePasswordUpdate);
+            }
+            var json = HttpContext.Session.GetString("LogginedUser");
+            if (json != null)
+            {
+                var employee1 = JsonConvert.DeserializeObject<Employee>(json);
+                employeePasswordUpdate.Id = employee1.Id;
+            }
 
+            _employeeDbContext.EmployeePasswordUpdate(employeePasswordUpdate);
+            TempData["SuccessMessage"] = "Password Updated Successfully";
+            return View();
+        }
+        //Add new Skill
         public IActionResult AddSkill()
         {
             return View();
@@ -355,6 +364,7 @@ namespace SampleMVCProject.Controllers
             TempData["SuccessMessage"] = "Skill Added Successfully";
             return View();
         }
+        //Add new Experience
         public IActionResult AddExperience()
         {
             return View();
@@ -377,44 +387,48 @@ namespace SampleMVCProject.Controllers
             return View();
         }
 
-        public IActionResult ForgotPassword()
+        //Employee List CRUD Operations
+        public IActionResult CreateEmployee()
         {
             return View();
         }
         [HttpPost]
-        public IActionResult ForgotPassword(ForgotPassword User)
+        public IActionResult CreateEmployee(Employee employee)
         {
-
-            string password = _employeeDbContext.GetPassword_By_Username(User.Username);
-            StringBuilder mailBody = new StringBuilder();
-            mailBody.AppendLine("<p>Your Password is " + password + "</p>");
-            using (MailMessage mail = new MailMessage())
+            var result = _employeeDbContext.CreateEmployee(employee);
+            if (result == null)
             {
-                string Displayname = _configuration["AppSettings:DisplayName"];
-                string mailFrom = _configuration["AppSettings:smtpUser"];
-                mail.To.Add(User.Username.Trim());
-                mail.From = new MailAddress(mailFrom, Displayname);
-                mail.Subject = "Contacting me";
-                mail.Body = mailBody.ToString();
-                mail.IsBodyHtml = true;
-
-                using (SmtpClient smtp = new SmtpClient())
-                {
-                    smtp.Host = _configuration["AppSettings:smtpServer"];
-                    smtp.Port = Convert.ToInt32(_configuration["AppSettings:smtpPort"]);
-                    smtp.EnableSsl = Convert.ToBoolean(_configuration["AppSettings:EnableSsl"]);
-                    smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                    smtp.UseDefaultCredentials = false;
-                    smtp.Credentials = new NetworkCredential(
-                        _configuration["AppSettings:smtpUser"],
-                        _configuration["AppSettings:PWD"]);
-                    smtp.Timeout = 20000;
-                    smtp.Send(mail);
-                }
+                TempData["ErrorMessage"] = "Error Ocurred  when employee adding";
             }
-            TempData["SuccessMessage"] = "Password is sent to your Email";
+            else
+            {
+                TempData["SuccessMessage"] = "Employee Created successfully";
+            }
             return View();
         }
+        public IActionResult EditEmployee(int id)
+        {
+            var result = _employeeDbContext.GetEmployee(id);
+            return View(result);
+        }
+        [HttpPost]
+        public IActionResult EditEmployee(Employee employee)
+        {
+            _employeeDbContext.UpdateEmployee(employee);
+            TempData["SuccessMessage"] = "Employee Data Updated Successfully";
+            return RedirectToAction("Index");
+        }
 
+        public IActionResult DeleteEmployee(int id)
+        {
+            _employeeDbContext.DeleteEmployee(id);
+            TempData["SuccessMessage"] = "Employee deleted Successfully";
+            return RedirectToAction("Index");
+        }
+        public IActionResult Index()
+        {
+            var result = _employeeDbContext.GetAllEmployees();
+            return View(result);
+        }
     }
 }

@@ -1,7 +1,11 @@
-﻿namespace SampleMVCProject.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SampleMVCProject.Models
 {
     public class ForgotPassword
     {
-       public  string Username { get; set; }
+        [Required(ErrorMessage ="Please enter Username or emailId")]
+        [EmailAddress(ErrorMessage = "Invalid Username or Email")]
+        public string Username { get; set; }
     }
 }
