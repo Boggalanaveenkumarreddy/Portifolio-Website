@@ -5,11 +5,15 @@ using System.Text;
 using Dapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using SampleMVCProject.DbContexts;
 using SampleMVCProject.Models;
 using SampleMVCProject.Repositories;
-
+using Twilio.Types;
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
+ 
 namespace SampleMVCProject.Controllers
 {
     public class HomeController : Controller
@@ -37,11 +41,11 @@ namespace SampleMVCProject.Controllers
         }
         public IActionResult Home()
         {
-            //EmployeeLoginDeatails employeeLoginDeatails = new EmployeeLoginDeatails();
-            //employeeLoginDeatails.Username = "boggalanaveen321@gmail.com";
-            //employeeLoginDeatails.Password = "naveen@321";
-            //var result = _employeeDbContext.EmployeeLoginCheck(employeeLoginDeatails);
-            //HttpContext.Session.SetString("LogginedUser", JsonConvert.SerializeObject(result));
+            EmployeeLoginDeatails employeeLoginDeatails = new EmployeeLoginDeatails();
+            employeeLoginDeatails.Username = "boggalanaveen321@gmail.com";
+            employeeLoginDeatails.Password = "naveen@321";
+            var result = _employeeDbContext.EmployeeLoginCheck(employeeLoginDeatails);
+            HttpContext.Session.SetString("LogginedUser", JsonConvert.SerializeObject(result));
             var json = HttpContext.Session.GetString("LogginedUser");
             if (json != null)
             {
@@ -137,7 +141,7 @@ namespace SampleMVCProject.Controllers
             {
                 TempData["SuccessMessage"] = "User Registered successfully";
             }
-            return  RedirectToAction("EmployeeLogin");
+            return RedirectToAction("EmployeeLogin");
 
         }
         //ForgotPassword
@@ -158,7 +162,7 @@ namespace SampleMVCProject.Controllers
                 TempData["ErrorMessage"] = "Invalid Email or User Not Found";
                 return View(User);
             }
-                StringBuilder mailBody = new StringBuilder();
+            StringBuilder mailBody = new StringBuilder();
             mailBody.AppendLine("<p>Your Password is " + password + "</p>");
             using (MailMessage mail = new MailMessage())
             {
@@ -187,7 +191,7 @@ namespace SampleMVCProject.Controllers
             TempData["SuccessMessage"] = "Password is sent to your Email";
             return View();
         }
-
+        //[Route("EmployeeLogin")]
         //Employee login 
         public IActionResult EmployeeLogin()
         {
@@ -195,6 +199,7 @@ namespace SampleMVCProject.Controllers
             return View();
         }
         [HttpPost]
+
         public IActionResult EmployeeLogin(EmployeeLoginDeatails employeeLoginDeatails)
         {
             if (!ModelState.IsValid)
@@ -214,6 +219,7 @@ namespace SampleMVCProject.Controllers
             }
             return View();
         }
+
         //Edit Profile Data
         public IActionResult EditProfileData()
         {
@@ -258,7 +264,7 @@ namespace SampleMVCProject.Controllers
             }
             _employeeDbContext.UpdateProfileData(employee);
             TempData["SuccessMessage"] = "Profile Data Updated Successfully";
-            return RedirectToAction("Index");
+            return View(employee);
         }
         //Change Profile picture
         public IActionResult UploadProfilePicture()
@@ -429,6 +435,30 @@ namespace SampleMVCProject.Controllers
         {
             var result = _employeeDbContext.GetAllEmployees();
             return View(result);
+        }
+        public ActionResult Send()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Send(Sms model)
+        {
+            if (ModelState.IsValid)
+            {
+                string? accountSid = _configuration["Twilio:AccountSid"];
+                string? authToken = _configuration["Twilio:AuthToken"];
+                string? fromNumber = _configuration["Twilio:FromNumber"];
+                TwilioClient.Init(accountSid, authToken);
+                var message = MessageResource.Create(
+                    body: model.MessageBody,
+                    from: new PhoneNumber(fromNumber),
+                    to: new PhoneNumber(model.ToPhoneNumber)
+                );
+
+                TempData["SuccessMessage"] = "Message Sent!";
+            }
+            return View();
         }
     }
 }
